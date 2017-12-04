@@ -14,6 +14,8 @@ An OpenSCAD model of a smartphone case, suitable for motorbike mounting and GPS 
 
 ## The OpenSCAD model
 
+![Rendering](./img/proj-assembling-test.png)
+
 * Parametric project.
 * Exploded view.
 * 2D print test.
