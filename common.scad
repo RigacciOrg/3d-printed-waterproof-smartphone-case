@@ -92,22 +92,16 @@ module rounded_cube(size, radius, center = false) {
 }
 
 //-------------------------------------------------------------------------
-// Housing for the head of a screw, with a washer-like thickness.
+// Washer-like thickness under the screw head, without the engraved hole.
 //-------------------------------------------------------------------------
-module screw_head_seat(screw_head_d, screw_head_h, screw_diam) {
+module screw_washer(screw_head_d, screw_head_h) {
     $fn = smalld_fn;
     r1 = screw_head_d * 1.7 / 2;
-    r2 = screw_head_d * 1.3 / 2;
+    r2 = screw_head_d * 1.4 / 2;
     h1 = 0.8; // Washer thickness.
     h2 = screw_head_h * 0.5;
-    difference() {
-        union() {
-            translate([0, 0, -interf]) cylinder(r = r1, h = h1 + interf * 2);
-            translate([0, 0, h1]) cylinder(r1 = r1, r2 = r2, h = h2);
-        }
-        translate([0, 0, -(interf * 2)]) cylinder(r = screw_diam / 2, h = h1 + interf * 3);
-        translate([0, 0, h1]) cylinder(r = screw_head_d / 2, h = h2 + interf);
-    }
+    translate([0, 0, -interf]) cylinder(r = r1, h = h1 + interf * 2);
+    translate([0, 0, h1]) cylinder(r1 = r1, r2 = r2, h = h2);
 }
 
 //------------------------------------------------------------------------

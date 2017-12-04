@@ -87,9 +87,6 @@ translate([0, 0, case_z + exploded]) {
         linear_extrude(height = interf + 0.2, convexity = 20)
           text("OpenStreetMap.Org", font = "Liberation Sans", size = 5, valign = "bottom", halign = "center", $fn = 32);
     }
-    translate([0, 0, top_thick - interf]) screw_head_seats();
-    translate([margin_seal, margin_seal, top_thick])
-      o_ring_rounded_square(case_x - (margin_seal * 2), case_y - (margin_seal * 2), 4, or_main_r);
   }
 }
 
@@ -108,7 +105,8 @@ translate([0, 0, -3 - exploded]) color("silver") back_panel();
 //-------------------------------------------------------------------------
 // A body assembly screw, for size reference.
 //-------------------------------------------------------------------------
-translate([0, 0, case_z + top_thick + 0.8])
+corner_offset = case_r - ((case_r - margin_holes) / sqrt(2));
+translate([corner_offset, corner_offset, case_z + top_thick + 0.8])
   rotate(a = 180, v = [0, 1, 0])
     color([190/255, 190/255, 190/255])
       bolt_m2p5(25);

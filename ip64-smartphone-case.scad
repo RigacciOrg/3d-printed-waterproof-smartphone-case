@@ -75,8 +75,12 @@ btn_x = phone_x + margin;
 btn_z = case_z / 2;
 btn_right_pos_y = [87, 98, 113];
 
-// Bolts for body retain, M2.5.
+// Bolts for body retain (M2.5) and holes radius.
 bolt_d = 2.5;
+bolt_hole_r = bolt_d / 2 + 0.1;
+bolt_head_d = 5;
+bolt_head_h = 2.0;
+bolt_washer_h = 0.7;
 
 // O-Ring cross-section and inner diameter.
 or_pins_cs = 1.0;
@@ -108,7 +112,7 @@ module body_2d() {
         translate([(case_x - phone_x / 2) / 2, margin + connector_space_y / 2])
             rounded_square([phone_x / 2, connector_space_y / 2 + 3.1], 3);
         // Screew holes.
-        screw_holes_2d();
+        body_screws_holes_2d(bolt_hole_r);
     }
 }
 
@@ -159,7 +163,7 @@ module front_panel_2d() {
     difference() {
         rounded_square([case_x, case_y], case_r);
         translate([scr_x, scr_y]) rounded_square([scr_w, scr_h], scr_r);
-        screw_holes_2d();
+        body_screws_holes_2d(bolt_hole_r);
     }
 
     // Add four retaining pads at screen's corners.
@@ -175,17 +179,31 @@ module front_panel_2d() {
     translate([cnr_x2, cnr_y2]) rounded_square([cnr_w * 2, cnr_h * 2], 3, center = true);
 
 }
+
+//-------------------------------------------------------------------------
+// The front panel, with 3D enhancements.
+//-------------------------------------------------------------------------
 module front_panel() {
-    linear_extrude(height = top_thick) front_panel_2d();
+    difference() {
+      union() {
+        linear_extrude(height = top_thick) front_panel_2d();
+        translate([0, 0, top_thick - interf]) body_screws_washers();
+        translate([margin_seal, margin_seal, top_thick])
+          o_ring_rounded_square(case_x - (margin_seal * 2), case_y - (margin_seal * 2), 4, or_main_r);
+      }
+      linear_extrude(height = top_thick * 3, convexity = 10) body_screws_holes_2d(bolt_hole_r);
+      translate([0, 0, top_thick + bolt_washer_h])
+        linear_extrude(height = top_thick * 2, convexity = 10) body_screws_holes_2d((bolt_head_d + 0.1) / 2);
+    }
 }
 
 //-------------------------------------------------------------------------
-// The back panel. Simple aluminum plate, laser cut.
+// The back panel: plain aluminum plate, laser cut.
 //-------------------------------------------------------------------------
 module back_panel_2d() {
     difference() {
         rounded_square([case_x, case_y], case_r);
-        screw_holes_2d();
+        body_screws_holes_2d(bolt_hole_r);
     }
 }
 module back_panel() {
@@ -193,49 +211,48 @@ module back_panel() {
 }
 
 //-------------------------------------------------------------------------
-// screw_head_seat() sized for an M2.5 bolt.
+// screw_washer() sized for an M2.5 bolt.
 //-------------------------------------------------------------------------
-module body_screw_seat() {
-    screw_head_seat(5.1, 2.0, 2.5);
+module body_washer() {
+    screw_washer(bolt_head_d, bolt_head_h);
 }
 
 //-------------------------------------------------------------------------
-// Housing for the head of the screws, with a washer-like thickness.
+// Reinforce below the screws head, placed all around the body.
 //-------------------------------------------------------------------------
-module screw_head_seats() {
+module body_screws_washers() {
 
   corner_offset = case_r - ((case_r - margin_holes) / sqrt(2));
 
-  translate([         corner_offset,          corner_offset, 0]) body_screw_seat();
-  translate([case_x - corner_offset,          corner_offset, 0]) body_screw_seat();
-  translate([         corner_offset, case_y - corner_offset, 0]) body_screw_seat();
-  translate([case_x - corner_offset, case_y - corner_offset, 0]) body_screw_seat();
+  translate([         corner_offset,          corner_offset, 0]) body_washer();
+  translate([case_x - corner_offset,          corner_offset, 0]) body_washer();
+  translate([         corner_offset, case_y - corner_offset, 0]) body_washer();
+  translate([case_x - corner_offset, case_y - corner_offset, 0]) body_washer();
   for (p = hole_pos_top) {
     space = (case_x / (len(hole_pos_top) + 1));
-    translate([space * (p + 1), case_y - margin_holes, 0]) body_screw_seat();
+    translate([space * (p + 1), case_y - margin_holes, 0]) body_washer();
   }
   for (p = hole_pos_bottom) {
     space = (case_x / (len(hole_pos_bottom) + 1));
-    translate([space * (p + 1), margin_holes, 0]) body_screw_seat();
+    translate([space * (p + 1), margin_holes, 0]) body_washer();
   }
   for (p = hole_pos_left) {
     space = (case_y / (len(hole_pos_left) + 1));
-    translate([margin_holes, space * (p + 1), 0]) body_screw_seat();
+    translate([margin_holes, space * (p + 1), 0]) body_washer();
   }
   for (p = hole_pos_right) {
     space = (case_y / (len(hole_pos_right) + 1));
-    translate([case_x - margin_holes, space * (p + 1), 0]) body_screw_seat();
+    translate([case_x - margin_holes, space * (p + 1), 0]) body_washer();
   }
 }
 
 //-------------------------------------------------------------------------
 // Make the screw holes into a 2D plane.
 //-------------------------------------------------------------------------
-module screw_holes_2d() {
+module body_screws_holes_2d(hole_r) {
 
   $fn = smalld_fn;
   corner_offset = case_r - ((case_r - margin_holes) / sqrt(2));
-  hole_r = (bolt_d / 2) + 0.1;
 
   translate([         corner_offset,          corner_offset]) circle(r = hole_r);
   translate([case_x - corner_offset,          corner_offset]) circle(r = hole_r);
