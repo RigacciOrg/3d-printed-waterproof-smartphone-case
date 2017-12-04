@@ -16,8 +16,19 @@ An OpenSCAD model of a smartphone case, suitable for motorbike mounting and GPS 
 
 ![Rendering](./img/proj-assembling-test.png)
 
-* Parametric project.
-* Exploded view.
+### Parametric Project
+
+You should set at least the size of your device (smartphone) and the position of
+the side buttons (at the moment only le right side is coded). Browse the
+**ip64-smartphone-case.scad** and search for **phone_x**, **phone_y**, **phone_z**
+variables. Buttons coordinates are **btn_power_y**, **btn_vol_up_y** and **btn_vol_down_y**.
+
+### Exploded View
+
+Open the **proj-assembling-test.scad** file and see the preview. To see an exploded
+view, set the **exploded** variable to a value greather than zero (it is millimters,
+try with 20).
+
 * 2D print test.
 
 ## 3D Printed parts
