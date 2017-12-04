@@ -73,9 +73,7 @@ hole_pos_right  = [0, 0.85];
 // Device (smartphone) button positions.
 btn_x = phone_x + margin;
 btn_z = case_z / 2;
-btn_power_y    =  87;
-btn_vol_up_y   =  98;
-btn_vol_down_y = 113;
+btn_right_pos_y = [87, 98, 113];
 
 // Bolts for body retain, M2.5.
 bolt_d = 2.5;

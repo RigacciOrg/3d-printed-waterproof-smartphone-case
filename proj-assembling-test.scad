@@ -33,9 +33,9 @@ difference() {
   body();
   translate([margin + phone_x, margin + connector_space_y + padding_thick, btn_z]) {
     rotate(a=90, v=[0, 1, 0]) {
-      translate([0, btn_power_y,    0]) clevis_pin_hole_3mm(margin, or_pins_cs);
-      translate([0, btn_vol_down_y, 0]) clevis_pin_hole_3mm(margin, or_pins_cs);
-      translate([0, btn_vol_up_y,   0]) clevis_pin_hole_3mm(margin, or_pins_cs);
+      for (y = btn_right_pos_y) {
+        translate([0, y, 0]) clevis_pin_hole_3mm(margin, or_pins_cs);
+      }
     }
   }
 }
@@ -50,9 +50,9 @@ translate([case_x / 2, -exploded, case_z / 2])
 //-------------------------------------------------------------------------
 // Place the right-side clevis pins.
 //-------------------------------------------------------------------------
-translate([btn_x, margin + connector_space_y, btn_z]) {
+translate([btn_x, margin + connector_space_y + padding_thick, btn_z]) {
   rotate(a = 90, v = [0, 1, 0]) {
-    for (y = [btn_power_y, btn_vol_down_y, btn_vol_up_y]) {
+    for (y = btn_right_pos_y) {
       translate([0, y, clevis_head_height - exploded]) clevis_pin_3mm();
     }
   }
@@ -66,7 +66,7 @@ x2 = phone_x + margin * 2 - or_pins_cs / 2 - or_rim + exploded * 0.5;
 for (x = [x1, x2]) {
   translate([x, margin + connector_space_y, btn_z]) {
     rotate(a=-90, v=[0, 1, 0]) {
-      for (y = [btn_power_y, btn_vol_down_y, btn_vol_up_y]) {
+      for (y = btn_right_pos_y) {
         translate([0, y, 0])
           color(c=[100/255, 100/255, 100/255])
             o_ring(or_pins_id, or_pins_cs);

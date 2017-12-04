@@ -21,7 +21,7 @@ An OpenSCAD model of a smartphone case, suitable for motorbike mounting and GPS 
 You should set at least the size of your device (smartphone) and the position of
 the side buttons (at the moment only le right side is coded). Browse the
 **ip64-smartphone-case.scad** and search for **phone_x**, **phone_y**, **phone_z**
-variables. Buttons coordinates are **btn_power_y**, **btn_vol_up_y** and **btn_vol_down_y**.
+variables. Buttons coordinates are in **btn_right_pos_y** vector.
 
 ### Exploded View
 
