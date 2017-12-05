@@ -42,11 +42,12 @@ For 3D printing you must render two objects:
 * Main body.
 * Front frame.
 
+Use the file **proj-3d-print.scad** to lay-out the object for the manufacturing.
 Before starting the final rendering, set proper values for the variables **rounded_fn**
 and **smalld_fn**. They control the **$fn** OpenSCAD special variable, i.e. the number
 of fragments to render a full circle. The first variable is for rounded objects, the
-second is for small diamters pin and holes. You should try __rounded_fn=92__ and
-__smalld_fn=64__ at least.
+second is for small diamters pin and holes. You should try *rounded_fn=92* and
+*smalld_fn=64* at least.
 
 ## Laser cut parts
 
