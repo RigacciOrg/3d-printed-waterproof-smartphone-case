@@ -67,8 +67,8 @@ bottom_thick = 3.0;
 // Hole positions along the edges.
 hole_pos_top    = [0];
 hole_pos_bottom = [0, 1];
-hole_pos_left   = [0, 1, 2];
-hole_pos_right  = [0, 0.85];
+hole_pos_left   = [0, 1, 2, 3];
+hole_pos_right  = [0, 1, 2, 3];
 
 // Device (smartphone) button positions.
 btn_x = phone_x + margin;
@@ -77,7 +77,7 @@ btn_right_pos_y = [87, 98, 113];
 
 // Bolts for body retain (M2.5) and holes radius.
 bolt_d = 2.5;
-bolt_hole_r = bolt_d / 2 + 0.1;
+bolt_hole_r = (bolt_d + 0.2) / 2;
 bolt_head_d = 5;
 bolt_head_h = 2.0;
 bolt_washer_h = 0.7;
@@ -111,8 +111,8 @@ module body_2d() {
         // More space (e.g. for silca-gel).
         translate([(case_x - phone_x / 2) / 2, margin + connector_space_y / 2])
             rounded_square([phone_x / 2, connector_space_y / 2 + 3.1], 3);
-        // Screew holes.
-        body_screws_holes_2d(bolt_hole_r);
+        // Screew holes, 2D only.
+        body_screws_holes(0, bolt_hole_r);
     }
 }
 
@@ -146,7 +146,7 @@ module body() {
 //-------------------------------------------------------------------------
 // The front panel, with the screen window, 2D shape.
 //-------------------------------------------------------------------------
-module front_panel_2d() {
+module front_panel_2d(make_holes = true) {
 
     // Overlapping border.
     overlap_side   = padding_thick + 3.5;
@@ -163,7 +163,7 @@ module front_panel_2d() {
     difference() {
         rounded_square([case_x, case_y], case_r);
         translate([scr_x, scr_y]) rounded_square([scr_w, scr_h], scr_r);
-        body_screws_holes_2d(bolt_hole_r);
+        if (make_holes) body_screws_holes(0, bolt_hole_r);
     }
 
     // Add four retaining pads at screen's corners.
@@ -185,15 +185,14 @@ module front_panel_2d() {
 //-------------------------------------------------------------------------
 module front_panel() {
     difference() {
-      union() {
-        linear_extrude(height = top_thick) front_panel_2d();
-        translate([0, 0, top_thick - interf]) body_screws_washers();
-        translate([margin_seal, margin_seal, top_thick])
-          o_ring_rounded_square(case_x - (margin_seal * 2), case_y - (margin_seal * 2), 4, or_main_r);
-      }
-      linear_extrude(height = top_thick * 3, convexity = 10) body_screws_holes_2d(bolt_hole_r);
-      translate([0, 0, top_thick + bolt_washer_h])
-        linear_extrude(height = top_thick * 2, convexity = 10) body_screws_holes_2d((bolt_head_d + 0.1) / 2);
+        union() {
+            linear_extrude(height = top_thick, convexity = 10) front_panel_2d(make_holes = false);
+            translate([0, 0, top_thick - interf]) body_screws_washers();
+            translate([margin_seal, margin_seal, top_thick])
+                o_ring_rounded_square(case_x - (margin_seal * 2), case_y - (margin_seal * 2), 4, or_main_r);
+        }
+        translate([0, 0, -interf]) body_screws_holes(top_thick + bolt_head_h, bolt_hole_r);
+        translate([0, 0, top_thick + bolt_washer_h]) body_screws_holes(bolt_head_h, (bolt_head_d + 0.2) / 2);
     }
 }
 
@@ -203,7 +202,7 @@ module front_panel() {
 module back_panel_2d() {
     difference() {
         rounded_square([case_x, case_y], case_r);
-        body_screws_holes_2d(bolt_hole_r);
+        body_screws_holes(0, bolt_hole_r);
     }
 }
 module back_panel() {
@@ -218,7 +217,7 @@ module body_washer() {
 }
 
 //-------------------------------------------------------------------------
-// Reinforce below the screws head, placed all around the body.
+// Reinforces below the screws head, placed all around the body.
 //-------------------------------------------------------------------------
 module body_screws_washers() {
 
@@ -247,31 +246,42 @@ module body_screws_washers() {
 }
 
 //-------------------------------------------------------------------------
-// Make the screw holes into a 2D plane.
+// Make a 3D or 2D hole (cylinder or circle), upon height h.
 //-------------------------------------------------------------------------
-module body_screws_holes_2d(hole_r) {
+module hole_2d_3d(r, h, center = false) {
+    if (h > 0) {
+        cylinder(h=h, r=r, center=center);
+    } else {
+        circle(r=r);
+    }
+}
+
+//-------------------------------------------------------------------------
+// Make the body screw holes. Make just 2D circles if h is zero.
+//-------------------------------------------------------------------------
+module body_screws_holes(h, r, center = false) {
 
   $fn = smalld_fn;
   corner_offset = case_r - ((case_r - margin_holes) / sqrt(2));
 
-  translate([         corner_offset,          corner_offset]) circle(r = hole_r);
-  translate([case_x - corner_offset,          corner_offset]) circle(r = hole_r);
-  translate([         corner_offset, case_y - corner_offset]) circle(r = hole_r);
-  translate([case_x - corner_offset, case_y - corner_offset]) circle(r = hole_r);
+  translate([         corner_offset,          corner_offset]) hole_2d_3d(r, h, center);
+  translate([case_x - corner_offset,          corner_offset]) hole_2d_3d(r, h, center);
+  translate([         corner_offset, case_y - corner_offset]) hole_2d_3d(r, h, center);
+  translate([case_x - corner_offset, case_y - corner_offset]) hole_2d_3d(r, h, center);
   for (p = hole_pos_top) {
     space = (case_x / (len(hole_pos_top) + 1));
-    translate([space * (p + 1), case_y - margin_holes]) circle(r = hole_r);
+    translate([space * (p + 1), case_y - margin_holes]) hole_2d_3d(r, h, center);
   }
   for (p = hole_pos_bottom) {
     space = (case_x / (len(hole_pos_bottom) + 1));
-    translate([space * (p + 1), margin_holes]) circle(r = hole_r);
+    translate([space * (p + 1), margin_holes]) hole_2d_3d(r, h, center);
   }
   for (p = hole_pos_left) {
     space = (case_y / (len(hole_pos_left) + 1));
-    translate([margin_holes, space * (p + 1)]) circle(r = hole_r);
+    translate([margin_holes, space * (p + 1)]) hole_2d_3d(r, h, center);
   }
   for (p = hole_pos_right) {
     space = (case_y / (len(hole_pos_right) + 1));
-    translate([case_x - margin_holes, space * (p + 1)]) circle(r = hole_r);
+    translate([case_x - margin_holes, space * (p + 1)]) hole_2d_3d(r, h, center);
   }
 }
