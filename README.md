@@ -21,7 +21,7 @@ An OpenSCAD model of a smartphone case, suitable for motorbike mounting and GPS 
 You should set at least the size of your device (smartphone) and the position of
 the side buttons (at the moment only le right side is coded). Browse the
 **ip64-smartphone-case.scad** and search for **phone_x**, **phone_y**, **phone_z**
-variables. Buttons coordinates are in **btn_right_pos_y** vector.
+variables. Buttons coordinates are into **btn_right_pos_y** array.
 
 ### Exploded View
 
@@ -29,7 +29,10 @@ Open the **proj-assembling-test.scad** file and see the preview. To see an explo
 view, set the **exploded** variable to a value greather than zero (it is millimters,
 try with 20).
 
-* 2D print test.
+### 2D print test
+
+Open the **proj-2d-test.scad** project file, export to DXF and print it on paper,
+so you can check the overall dimensions and actual smartphone fitting.
 
 ## 3D Printed parts
 
