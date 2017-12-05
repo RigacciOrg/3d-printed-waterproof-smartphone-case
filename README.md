@@ -31,8 +31,9 @@ try with 20).
 
 ### 2D print test
 
-Open the **proj-2d-test.scad** project file, export to DXF and print it on paper,
-so you can check the overall dimensions and actual smartphone fitting.
+Open the **proj-2d-test.scad** project file, render it and export in DXF format.
+It is a 2D drawing that you can print on paper, so you can check the overall
+dimensions and actual smartphone fitting.
 
 ## 3D Printed parts
 

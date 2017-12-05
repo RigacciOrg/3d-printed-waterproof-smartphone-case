@@ -30,12 +30,14 @@ groove_width = or_main_width;
 
 front_panel_2d();
 
+// Main body outline, with the O-Ring position.
 translate([(case_x + 5), 0]) {
-    difference() {
-      body_2d();
-      translate([margin_seal, margin_seal, 0])
+  difference() {
+    body_2d();
+    translate([margin_seal, margin_seal])
+      projection()
         groove_rounded_square(groove_x, groove_y, or_main_r, groove_width, groove_depth + interf);
-    }
+  }
 }
 
 translate([(case_x + 5) * 2, 0]) back_panel_2d();
