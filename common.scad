@@ -31,7 +31,7 @@ rounded_fn = 32;
 smalld_fn = 18;
 
 // Size of the O-Ring retaining rim.
-or_rim = 0.7;
+or_rim = 1.0;
 
 // O-Ring for sealing cable grommet, see static seal tables.
 o_ring_cable_grommet_inner_diam   = 37.82;

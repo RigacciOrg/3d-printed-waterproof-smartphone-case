@@ -64,11 +64,12 @@ case_r = 12;
 top_thick    = 3.0;
 bottom_thick = 3.0;
 
-// Hole positions along the edges.
+// Hole positions along the edges, for mounting bolts.
+// Adjust by some decimals to move the hole slightly.
 hole_pos_top    = [0];
 hole_pos_bottom = [0, 1];
 hole_pos_left   = [0, 1, 2, 3];
-hole_pos_right  = [0, 1, 2, 3];
+hole_pos_right  = [0, 1, 2, 3.1];
 
 // Device (smartphone) button positions.
 btn_x = phone_x + margin;
