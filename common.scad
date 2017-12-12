@@ -157,6 +157,34 @@ module o_ring(inside_diam, cross_section) {
 }
 
 //-------------------------------------------------------------------------
+// d1 = outer diameter, d2 = inner diameter, h = thickness.
+//-------------------------------------------------------------------------
+module washer(d1, d2, h) {
+    $fn = smalld_fn;
+    translate([0, 0, h / 2])
+        difference() {
+            cylinder(r = d1 / 2, h = h, center=true);
+            cylinder(r = d2 / 2, h = h + interf * 2, center=true);
+        }
+}
+
+//-------------------------------------------------------------------------
+// Simulate a compression spring.
+//-------------------------------------------------------------------------
+module spring(diam, wire_d, len) {
+    $fn = 32;
+    coils = floor(len / (wire_d * 3));
+    step = wire_d + (len - (wire_d * coils)) / (coils - 1);
+    //for(coil = [0 : wire_d * 3 : len])
+    for(coil = [0 : step : len])
+        translate([0, 0, wire_d / 2 + coil])
+            difference() {
+                cylinder(r = diam / 2, h = wire_d, center=true);
+                cylinder(r = (diam / 2) -  wire_d, h = wire_d + interf * 2, center=true);
+            }
+}
+
+//-------------------------------------------------------------------------
 // https://www.pivotpins.com/products/bc-clevis-pins-with-grooves.html
 //-------------------------------------------------------------------------
 module clevis_pin(
@@ -187,10 +215,11 @@ module clevis_pin(
 }
 
 //-------------------------------------------------------------------------
-// Hole to let the Clevis Pin operate as a button.
-// or_cs = O-Ring cross-section.
+// Hole to let the Clevis Pin operate as a button; it features a
+// recess to accomodate the pin head and two grooves for O-Rings
+// with or_cs cross-section.
 //-------------------------------------------------------------------------
-module clevis_pin_hole(pin_diam, head_diam, head_height, lenght, or_cs) {
+module clevis_pin_hole(pin_diam, head_diam, head_recess, lenght, or_cs) {
 
     // O-Ring groove for dynamic seal. TODO: get real measure!
     g_depth = or_cs * 1.0;
@@ -201,20 +230,11 @@ module clevis_pin_hole(pin_diam, head_diam, head_height, lenght, or_cs) {
 
     // Main hole with clevis pin head seat.
     translate([0, 0, -interf]) cylinder_outer((pin_diam  + pin_clearance)  / 2, lenght + interf * 2, smalld_fn);
-    translate([0, 0, -interf]) cylinder_outer((head_diam + head_clearance) / 2, head_height + interf, smalld_fn);
+    translate([0, 0, -interf]) cylinder_outer((head_diam + head_clearance) / 2, head_recess + interf, smalld_fn);
 
     // O-Ring seats.
-    translate([0, 0, head_height + or_rim]) cylinder_mid(g_diam / 2, g_width, smalld_fn);
+    translate([0, 0, head_recess + or_rim]) cylinder_mid(g_diam / 2, g_width, smalld_fn);
     translate([0, 0, lenght - g_width - or_rim]) cylinder_mid(g_diam / 2, g_width, smalld_fn);
-}
-
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
-module clevis_pin_hole_3_16(lenght, or_cs) {
-    A   = 3 / 16 * 25.4;	// pin_diam
-    B   = 0.310 * 25.4;		// head_diam
-    C   = 0.040 * 25.4;		// head_height
-    clevis_pin_hole(A, B, C, lenght, or_cs);
 }
 
 //-------------------------------------------------------------------------
@@ -226,7 +246,7 @@ module clevis_pin_3_16() {
     PC  = 0.030 * 25.4;		// pin_chamfer
     PCA = 45;			// pin_chamfer_angle
     B   = 0.310 * 25.4;		// head_diam
-    C   = 0.040 * 25.4;		// head_height
+    C   = 0.040 * 25.4;		// head_recess
     D   = 0.020 * 25.4;		// head_chamfer
     HCA = 45;			// head_chamfer_angle
     DG  = 0.148 * 25.4;		// groove_d
@@ -243,7 +263,7 @@ module clevis_pin_1_4() {
     PC  = 0.030 * 25.4;		// pin_chamfer
     PCA = 45;			// pin_chamfer_angle
     B   = 0.370 * 25.4;		// head_diam
-    C   = 0.090 * 25.4;		// head_height
+    C   = 0.090 * 25.4;		// head_recess
     D   = 0.030 * 25.4;		// head_chamfer
     HCA = 45;			// head_chamfer_angle
     DG  = 0.212 * 25.4;		// groove_d
@@ -253,31 +273,31 @@ module clevis_pin_1_4() {
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-module clevis_pin_3mm() {
+module clevis_pin_m3(pin_length) {
+    d1  = 1.6;			// hole_diam
     A   = 3.0;			// pin_diam
-    L   = 26;			// pin_length
-    LE  = 22;			// pin_length_effective
-    PC  = 0.030 * 25.4;		// pin_chamfer
+    L   = pin_length;		// pin_length
+    LE  = L - 1.6 - d1 / 2;	// pin_length_effective
+    PC  = 0.3;			// pin_chamfer
     PCA = 45;			// pin_chamfer_angle
     B   = 5;			// head_diam
-    C   = 0.090 * 25.4;		// head_height
-    D   = 0.030 * 25.4;		// head_chamfer
+    C   = 1.5;			// head_recess
+    D   = 0.4;			// head_chamfer
     HCA = 45;			// head_chamfer_angle
     DG  = 0;			// groove_d
     G   = 0;			// groove_width
     clevis_pin(A, L, LE, PC, PCA, B, C, D, HCA, DG, G);
     color("silver") translate([0, 0, LE])
       rotate(a = 90, v = [1, 0, 0])
-        cylinder(r=1/2, h = A + 2, center = true, $fn = smalld_fn);
+        cylinder(r = d1 / 2, h = A + 2, center = true, $fn = smalld_fn);
 }
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-module clevis_pin_hole_3mm(lenght, or_cs) {
+module clevis_pin_hole_m3(lenght, or_cs, head_recess = 1.5) {
     A   = 3.0;			// pin_diam
     B   = 5.0;			// head_diam
-    C   = 0.040 * 25.4;		// head_height
-    clevis_pin_hole(A, B, C, lenght, or_cs);
+    clevis_pin_hole(A, B, head_recess, lenght, or_cs);
 }
 
 //-------------------------------------------------------------------------
