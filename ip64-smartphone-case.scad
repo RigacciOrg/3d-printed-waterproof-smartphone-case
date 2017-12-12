@@ -91,10 +91,8 @@ or_main_depth = or_main_cs * 0.80; // See O-Ring groove dimensioning.
 or_main_width = or_main_cs * 1.30;
 or_main_r     = 10.0;
 
-// Clevis pins size.
-clevis_lenght = 18;
-clevis_effective_lenght = 15;
-clevis_head_height = 2; // TODO: use the actual size upon clevis used.
+// A recess at the side of clevis pin hole.
+clevis_head_recess = -0.1;
 
 //-------------------------------------------------------------------------
 // The main body, 2D shape.

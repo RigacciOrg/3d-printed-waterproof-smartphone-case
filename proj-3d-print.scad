@@ -18,7 +18,7 @@ difference() {
   translate([margin + phone_x, margin + connector_space_y + padding_thick, btn_z]) {
     rotate(a=90, v=[0, 1, 0]) {
       for (y = btn_right_pos_y) {
-        translate([0, y, 0]) clevis_pin_hole_3mm(margin, or_pins_cs);
+        translate([0, y, 0]) clevis_pin_hole_m3(margin, or_pins_cs);
       }
     }
   }
